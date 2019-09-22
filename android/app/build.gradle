@@ -25,6 +25,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdkVersion 28
 
@@ -39,7 +41,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.raul_twitch_swift_kotlin"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -70,5 +72,9 @@ dependencies {
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
 }
