@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.raul_twitch_swift_kotlin.R
-import com.example.raul_twitch_swift_kotlin.model.response.GameEntity
 import kotlinx.android.synthetic.main.game_item.view.*
 
-class TopGamesAdapter(val games : List<GameEntity>) : RecyclerView.Adapter<TopGamesAdapter.GameHolder>(){
+class TopGamesAdapter(val games : List<Map<String, Any>>) : RecyclerView.Adapter<TopGamesAdapter.GameHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameHolder {
         var view = LayoutInflater.from(parent.context).inflate(R.layout.game_item, parent, false)
@@ -26,19 +25,18 @@ class TopGamesAdapter(val games : List<GameEntity>) : RecyclerView.Adapter<TopGa
         holder.setData(game)
     }
 
-    inner class GameHolder(val myView : View) : RecyclerView.ViewHolder(myView){
+    inner class GameHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
 
-        fun setData(game : GameEntity?) {
+        fun setData(game : Map<String, Any>) {
 
-            System.out.println("###### $itemView.pivotX.toString()")
-
-            Glide.with(myView.context)
-                    .load(game?.thumbnailUrl)
+            Glide.with(itemView.context)
+                    .load(game["imageURL"].toString().replace("{width}x{height}", "400x400"))
                     .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(myView.image)
+                    .into(itemView.image)
 
-            myView.text_view.text = game?.title
+            itemView.text_view.text = game["name"].toString()
+            itemView.text_followers.text = "${game["viewers"].toString()} viewers"
 
         }
     }

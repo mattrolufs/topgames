@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
   Note: If the app contains multiple data sources that would make this channel too clunky, please implement a data channel for each.
  */
 
-enum DataChannelRequest { TopGamesEntity }
+enum DataChannelRequest { TopGamesEntity, StartNewActivity }
 
 class DataChannelError extends Error {
   DCErrorKind kind;
@@ -47,7 +47,8 @@ class DataChannel {
 
   getNewActivity() async {
     try {
-      await dataChannel.invokeMethod('startNewActivity');
+      await dataChannel
+          .invokeMethod(DataChannelRequest.StartNewActivity.toString());
     } on PlatformException catch (e) {
       print(e.message);
     }

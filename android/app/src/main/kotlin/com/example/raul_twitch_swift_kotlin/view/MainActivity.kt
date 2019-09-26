@@ -1,57 +1,91 @@
 package com.example.raul_twitch_swift_kotlin.view
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import com.example.raul_twitch_swift_kotlin.model.NativeTwitchDataSource
-import com.example.raul_twitch_swift_kotlin.viewmodel.TopGamesModel
-
+import com.example.raul_twitch_swift_kotlin.model.response.GameEntityResponse
 import io.flutter.app.FlutterActivity
-import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+//import kotlinx.serialization.ImplicitReflectionSerializer
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
 
-  //private val CHANNEL = "dataChannel"
-  companion object {
-    const val CHANNEL = "dataChannel"
-  }
+    //@ImplicitReflectionSerializer
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        GeneratedPluginRegistrant.registerWith(this)
+
+        MyApp.dataChannel = MethodChannel(flutterView, MyApp.CHANNEL)
+        MyApp.flutterRepositoryChannel = MethodChannel(flutterView, MyApp.FLUTTER_CHANNEL)
+
+        MyApp.dataChannel.setMethodCallHandler { call, result ->
+            if (call.method.equals("DataChannelRequest.TopGamesEntity")) {
+
+                GlobalScope.launch(Dispatchers.Main) {
+                    val twitchDataSource = NativeTwitchDataSource()
+                    noDeferredGames = twitchDataSource.getTopGames(20).await()
+
+                    var responseList = mutableMapOf<String, List<Map<String, Any>>>()
+                    var responseParams = mutableMapOf<String, Map<String, List<Map<String, Any>>>>()
 
 
+                    var entityList = mutableListOf<Map<String, Any>>()
+                    for (entity in noDeferredGames.data) {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    GeneratedPluginRegistrant.registerWith(this)
-    MethodChannel(flutterView, CHANNEL).setMethodCallHandler { call, result ->
-      if(call.method.equals("startNewActivity")) {
-            startNewActivity()
-            result.success(true)
-      }else {
-        result.notImplemented()
-      }
+                        var entityMap = mutableMapOf<String, Any>()
+
+                        entityMap.put("name", entity.userName)
+                        entityMap.put("viewers", entity.viewerCount)
+                        entityMap.put("imageURL", entity.thumbnailUrl)
+
+                        entityList.add(entityMap)
+
+                    }
+
+                    responseList["games"] = entityList
+                    responseParams["parameters"] = responseList
+
+                    System.out.println(responseList.toString())
+                    result.success(responseParams)
+                }
+
+            } else if (call.method.equals("DataChannelRequest.StartNewActivity")) {
+
+                startNewActivity()
+
+            } else {
+                result.notImplemented()
+            }
+        }
+
     }
 
-    val twitchDataSource = NativeTwitchDataSource()
+    lateinit var noDeferredGames: GameEntityResponse
 
-    GlobalScope.launch(Dispatchers.Main) {
-      val topGamesResponse = twitchDataSource.getTopGames(20).await()
-      System.out.println(topGamesResponse.data[0].gameId)
+    private fun startNewActivity() {
+        val intent = Intent(this, TopGamesActivity::class.java)
+        startActivity(intent)
     }
 
-  }
+}
 
-  override fun onResume() {
-    super.onResume()
+class MyApp : Application() {
 
+    companion object {
+        const val CHANNEL = "dataChannel"
+        const val FLUTTER_CHANNEL = "flutterRepositoryChannel"
+        lateinit var dataChannel: MethodChannel
+        lateinit var flutterRepositoryChannel: MethodChannel
+    }
 
-  }
+    override fun onCreate() {
+        super.onCreate()
 
-  private fun startNewActivity() {
-    val intent = Intent(this, TopGamesActivity::class.java)
-    startActivity(intent)
-  }
+    }
 
 }

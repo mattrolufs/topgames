@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:raul_twitch_swift_kotlin/Clutter3.dart';
 import 'package:raul_twitch_swift_kotlin/Data/DataChannelC3.dart';
+import 'package:raul_twitch_swift_kotlin/Domain/FlutterRepoChannelC3.dart';
 import 'package:raul_twitch_swift_kotlin/Presentation/HomeScene/HomePresenter.dart';
 import 'dart:io' show Platform;
 
@@ -69,16 +70,22 @@ class _HomeSceneState extends State<HomeScene>
 
   Widget returnAndroidNativeButton() {
     if (Platform.isAndroid) {
-      return MaterialButton(
-          child: const Text('Open Screen'),
-          elevation: 5.0,
-          height: 48.0,
-          minWidth: 250.0,
-          color: Colors.blue,
-          textColor: Colors.white,
-          onPressed: () {
-            DataChannel().getNewActivity();
-          });
+      return Center(
+        child: MaterialButton(
+            child: const Text(
+              'Open Android Native',
+              style: TextStyle(fontSize: 30.0),
+            ),
+            elevation: 5.0,
+            height: 60.0,
+            minWidth: 300.0,
+            color: Colors.transparent,
+            textColor: Colors.white,
+            onPressed: () {
+              //presenter?.getTopGames();
+              DataChannel().getNewActivity();
+            }),
+      );
     } else {
       return null;
     }
@@ -129,7 +136,11 @@ class _HomeSceneState extends State<HomeScene>
           child: Stack(
         children: <Widget>[
           buildStateBasedWidget(),
-          returnAndroidNativeButton(),
+          Center(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 500, 50, 0),
+                child: returnAndroidNativeButton()),
+          ),
         ].where(notNull).toList(),
       )),
     );
