@@ -11,19 +11,17 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-//import kotlinx.serialization.ImplicitReflectionSerializer
 
 class MainActivity : FlutterActivity() {
 
-    //@ImplicitReflectionSerializer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this)
 
-        MyApp.dataChannel = MethodChannel(flutterView, MyApp.CHANNEL)
-        MyApp.flutterRepositoryChannel = MethodChannel(flutterView, MyApp.FLUTTER_CHANNEL)
+        TopGamesApp.dataChannel = MethodChannel(flutterView, TopGamesApp.CHANNEL)
+        TopGamesApp.flutterRepositoryChannel = MethodChannel(flutterView, TopGamesApp.FLUTTER_CHANNEL)
 
-        MyApp.dataChannel.setMethodCallHandler { call, result ->
+        TopGamesApp.dataChannel.setMethodCallHandler { call, result ->
             if (call.method.equals("DataChannelRequest.TopGamesEntity")) {
 
                 GlobalScope.launch(Dispatchers.Main) {
@@ -74,7 +72,7 @@ class MainActivity : FlutterActivity() {
 
 }
 
-class MyApp : Application() {
+class TopGamesApp : Application() {
 
     companion object {
         const val CHANNEL = "dataChannel"

@@ -4,24 +4,38 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.raul_twitch_swift_kotlin.model.NativeTwitchDataSource
 import com.example.raul_twitch_swift_kotlin.model.response.GameEntityResponse
+import com.example.raul_twitch_swift_kotlin.view.TopGamesApp
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+class TopGamesViewModel : ViewModel() {
 
-//class TopGamesModel(val flutterView: FlutterView?): ViewModel() {
-class TopGamesModel : ViewModel() {
+    var mutableAny = MutableLiveData<Map<String, Map<String, List<Map<String, Any>>>>>()
 
-    //var mflutterView : FlutterView? = null
+    fun requestFlutterRepo(games : Int): MutableLiveData<Map<String, Map<String, List<Map<String, Any>>>>> {
 
-//    constructor (flutterView: FlutterView?) : this() {
-//        mflutterView = flutterView
-//
-//    }
+        TopGamesApp.flutterRepositoryChannel.invokeMethod("TopGamesEntity",null, object: MethodChannel.Result{
+            override fun notImplemented() {
+                System.out.println("###### not Implemented")
+            }
 
+            override fun error(p0: String?, p1: String?, p2: Any?) {
+                System.out.println("###### error")
+            }
 
+            override fun success(success: Any?) {
+                System.out.println("##### SUCCESS" + success.toString())
 
-    //var topGamesRepository = TopGamesRepository(flutterView)
+                mutableAny.value = success as Map<String, Map<String, List<Map<String, Any>>>>
+            }
+
+        })
+
+        return mutableAny
+
+    }
 
     var topGames : GameEntityResponse? = null
     var mutableTopGames = MutableLiveData<GameEntityResponse>()
@@ -33,8 +47,6 @@ class TopGamesModel : ViewModel() {
             topGames = twitchDataSource.getTopGames(games).await()
             mutableTopGames.value = topGames
         }
-
-        
 
 //        GlobalScope.launch(Dispatchers.Main) {
 //            System.out.println("############## in fetchTopGames Coroutine 1 ${games.toString()}")
@@ -48,8 +60,9 @@ class TopGamesModel : ViewModel() {
 
 }
 
-//class TopGamesViewModelFactory(
-//        private val mFlutterView: FlutterView) : ViewModelProvider.Factory {
+//class TopGamesViewModelFactory(private val flutterView: FlutterView) : ViewModelProvider.Factory {
+//
+//    var mFlutterView = flutterView
 //
 //    override fun <T : ViewModel> create(modelClass: Class<T>): T {
 //        System.out.println("##################### ${mFlutterView.toString()}")

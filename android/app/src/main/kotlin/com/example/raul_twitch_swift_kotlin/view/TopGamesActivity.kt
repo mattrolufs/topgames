@@ -1,52 +1,40 @@
 package com.example.raul_twitch_swift_kotlin.view
 
-import android.app.Activity
 import android.os.Bundle
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.raul_twitch_swift_kotlin.R
-import io.flutter.plugin.common.MethodChannel
+import com.example.raul_twitch_swift_kotlin.model.response.GameMap
+import com.example.raul_twitch_swift_kotlin.viewmodel.TopGamesViewModel
 import kotlinx.android.synthetic.main.top_games.*
 
-class TopGamesActivity: Activity() {
+class TopGamesActivity: FragmentActivity() {
+
+    lateinit var viewModel : TopGamesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.top_games)
 
-        MyApp.flutterRepositoryChannel.invokeMethod("TopGamesEntity",null, object: MethodChannel.Result{
-            override fun notImplemented() {
-                System.out.println("####### hello not Implemented")
-            }
+        viewModel = ViewModelProviders.of(this).get(TopGamesViewModel::class.java)
 
-            override fun error(p0: String?, p1: String?, p2: Any?) {
-                System.out.println("###### error")
-            }
+        viewModel.requestFlutterRepo(20).observe(this, Observer {
 
-            override fun success(success: Any?) {
-                System.out.println("##### SUCCESS" + success.toString())
-
-                renderGames(success)
-            }
-
+            renderGames(GameMap(it))
         })
 
     }
 
-    fun renderGames (games : Any?) {
-
-        var cast = games as? Map<String, Map<String, List<Map<String, Any>>>>
-        lateinit var list  :  List<Map<String, Any>>
-        lateinit var map  : Map<String, List<Map<String, Any>>>
-
-        map = cast?.get("parameters")!!
-        list = map.get("games")!!
+    fun renderGames (gameMap : GameMap) {
 
         val layoutManager = GridLayoutManager(this, 3,RecyclerView.VERTICAL, false)
         recycler_view_games.layoutManager = layoutManager
 
-        val reviewsAdapter = TopGamesAdapter(list)
+        val reviewsAdapter = TopGamesAdapter(gameMap.games)
         recycler_view_games.adapter = reviewsAdapter
 
     }
