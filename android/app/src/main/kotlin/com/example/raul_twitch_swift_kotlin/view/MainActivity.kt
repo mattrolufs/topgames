@@ -31,7 +31,6 @@ class MainActivity : FlutterActivity() {
                     var responseList = mutableMapOf<String, List<Map<String, Any>>>()
                     var responseParams = mutableMapOf<String, Map<String, List<Map<String, Any>>>>()
 
-
                     var entityList = mutableListOf<Map<String, Any>>()
                     for (entity in noDeferredGames.data) {
 

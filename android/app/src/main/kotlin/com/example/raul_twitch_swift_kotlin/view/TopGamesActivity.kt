@@ -22,14 +22,14 @@ class TopGamesActivity: FragmentActivity() {
 
         viewModel = ViewModelProviders.of(this).get(TopGamesViewModel::class.java)
 
-        viewModel.requestFlutterRepo(20).observe(this, Observer {
+        viewModel.requestGames(20).observe(this, Observer {
 
             renderGames(GameMap(it))
         })
 
     }
 
-    fun renderGames (gameMap : GameMap) {
+    private fun renderGames (gameMap : GameMap) {
 
         val layoutManager = GridLayoutManager(this, 3,RecyclerView.VERTICAL, false)
         recycler_view_games.layoutManager = layoutManager
